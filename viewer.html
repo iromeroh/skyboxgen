@@ -1,0 +1,1395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Skybox Viewer</title>
+  <style>
+    :root {
+      --bg-primary: #0d1117;
+      --bg-secondary: #161b22;
+      --bg-tertiary: #21262d;
+      --border-color: #30363d;
+      --text-primary: #e6edf3;
+      --text-secondary: #8b949e;
+      --accent-color: #58a6ff;
+      --accent-hover: #79c0ff;
+      --success-color: #3fb950;
+      --panel-width: 340px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: var(--bg-primary);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+      color: var(--text-primary);
+    }
+    #ui {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 10;
+      background: var(--bg-secondary);
+      width: var(--panel-width);
+      height: 100vh;
+      overflow-y: auto;
+      border-right: 1px solid var(--border-color);
+      transition: transform 0.3s ease;
+      display: flex;
+      flex-direction: column;
+    }
+    #ui.collapsed {
+      transform: translateX(calc(-1 * var(--panel-width)));
+    }
+    #toggleBtn {
+      position: fixed;
+      top: 12px;
+      left: 12px;
+      z-index: 20;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      width: 36px;
+      height: 36px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: left 0.3s ease, background 0.2s ease;
+    }
+    #toggleBtn:hover { background: var(--border-color); }
+    #ui:not(.collapsed) ~ #toggleBtn { left: calc(var(--panel-width) + 12px); }
+    #ui-header {
+      padding: 16px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    #ui-header h2 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+    }
+    #resetBtn {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-secondary);
+      padding: 4px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 11px;
+      transition: all 0.2s;
+    }
+    #resetBtn:hover {
+      border-color: var(--accent-color);
+      color: var(--accent-color);
+    }
+    #ui-content {
+      flex: 1;
+      padding: 12px 16px;
+      overflow-y: auto;
+    }
+    section {
+      margin-bottom: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    section:last-child { border-bottom: none; }
+    h3 {
+      margin: 0 0 10px 0;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    label {
+      font-size: 12px;
+      display: block;
+      margin-bottom: 6px;
+      color: var(--text-secondary);
+    }
+    input[type="text"],
+    input[type="number"],
+    select {
+      width: 100%;
+      padding: 8px 10px;
+      margin-bottom: 8px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      color: var(--text-primary);
+      font-size: 13px;
+      transition: border-color 0.2s;
+    }
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--accent-color);
+    }
+    input[type="range"] {
+      width: 100%;
+      margin-bottom: 8px;
+    }
+    input[type="checkbox"] {
+      accent-color: var(--accent-color);
+    }
+    .row {
+      display: flex;
+      gap: 8px;
+    }
+    .row > * { flex: 1; min-width: 0; }
+    .row label { margin-bottom: 0; display: flex; align-items: center; gap: 6px; font-size: 11px; }
+    #results {
+      max-height: 160px;
+      overflow-y: auto;
+      background: var(--bg-tertiary);
+      border-radius: 6px;
+      margin-top: 8px;
+    }
+    .result {
+      padding: 8px 10px;
+      cursor: pointer;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 12px;
+      transition: background 0.15s;
+    }
+    .result:last-child { border-bottom: none; }
+    .result:hover { background: var(--border-color); }
+    .result .game-tag {
+      display: inline-block;
+      background: var(--accent-color);
+      color: var(--bg-primary);
+      font-size: 9px;
+      padding: 2px 5px;
+      border-radius: 3px;
+      margin-left: 6px;
+      font-weight: 600;
+    }
+    button {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      color: var(--text-primary);
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.2s;
+      margin-right: 6px;
+      margin-top: 6px;
+    }
+    button:hover {
+      background: var(--border-color);
+      border-color: var(--text-secondary);
+    }
+    button.primary {
+      background: var(--accent-color);
+      border-color: var(--accent-color);
+      color: var(--bg-primary);
+      font-weight: 600;
+    }
+    button.primary:hover {
+      background: var(--accent-hover);
+      border-color: var(--accent-hover);
+    }
+    #selectedInfo {
+      background: var(--bg-tertiary);
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      margin-bottom: 8px;
+      min-height: 40px;
+    }
+    #readout, #status {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-top: 8px;
+    }
+    #status { color: var(--success-color); }
+    .checkbox-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+    .checkbox-grid label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: var(--text-primary);
+    }
+    .collapsible-header {
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .collapsible-header::before {
+      content: '\25BC';
+      font-size: 10px;
+      transition: transform 0.2s;
+    }
+    .collapsible-header.collapsed::before {
+      transform: rotate(-90deg);
+    }
+    .collapsible-content {
+      overflow: hidden;
+      max-height: 1000px;
+      transition: max-height 0.3s ease;
+    }
+    .collapsible-content.collapsed {
+      max-height: 0;
+    }
+    #container { width: 100vw; height: 100vh; }
+
+    /* Star Info Popup */
+    #starPopup {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 100;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 0;
+      min-width: 380px;
+      max-width: 480px;
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+    }
+    #starPopup.visible { display: block; }
+    #popupHeader {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-color);
+      background: var(--bg-tertiary);
+      border-radius: 12px 12px 0 0;
+    }
+    #popupHeader h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    #popupClose {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 24px;
+      cursor: pointer;
+      padding: 0;
+      line-height: 1;
+      transition: color 0.2s;
+    }
+    #popupClose:hover { color: var(--text-primary); }
+    #popupContent {
+      padding: 20px;
+    }
+    #popupDescription {
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .popup-grid {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      gap: 8px 12px;
+      font-size: 12px;
+    }
+    .popup-label {
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+    .popup-value {
+      color: var(--text-primary);
+      font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+    }
+    .popup-value.highlight {
+      color: var(--accent-color);
+    }
+    #popupOverlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 99;
+    }
+    #popupOverlay.visible { display: block; }
+
+    /* Target Crosshair */
+    #crosshair {
+      display: none;
+      position: fixed;
+      pointer-events: none;
+      z-index: 15;
+    }
+    #crosshair.visible { display: block; }
+    #crosshair svg {
+      width: 48px;
+      height: 48px;
+    }
+    #crosshair svg circle, #crosshair svg line {
+      stroke: var(--accent-color);
+      stroke-width: 2;
+      fill: none;
+    }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+</head>
+<body>
+  <div id="ui">
+    <div id="ui-header">
+      <h2>Skybox Viewer</h2>
+      <button id="resetBtn">Reset</button>
+    </div>
+    <div id="ui-content">
+      <section>
+        <h3>Search</h3>
+        <input id="searchQuery" type="text" placeholder="Star name, HIP, Gliese, or game star name">
+        <button id="searchBtn">Search</button>
+        <div id="results"></div>
+      </section>
+      <section>
+        <h3>Selected</h3>
+        <div id="selectedInfo">None</div>
+        <button id="faceBtn">Face Selected</button>
+        <button id="useTargetBtn" class="primary">Use As Target</button>
+      </section>
+      <section>
+        <h3>System</h3>
+        <input id="systemName" type="text" placeholder="System name or HIP">
+        <div class="row">
+          <input id="systemX" type="number" step="0.0001" placeholder="X (game)">
+          <input id="systemY" type="number" step="0.0001" placeholder="Y (game)">
+          <input id="systemZ" type="number" step="0.0001" placeholder="Z (game)">
+        </div>
+      </section>
+      <section>
+        <h3 class="collapsible-header" data-target="renderSection">Render</h3>
+        <div id="renderSection" class="collapsible-content">
+          <label>Background path <input id="backgroundPath" type="text" value="backgrounds/diffuse_background.jpg"></label>
+          <label>Size
+            <select id="sizePreset">
+              <option value="4096x2048">4K</option>
+              <option value="8192x4096">8K</option>
+              <option value="custom">Custom</option>
+            </select>
+          </label>
+          <div class="row">
+            <input id="customW" type="number" placeholder="Width">
+            <input id="customH" type="number" placeholder="Height">
+          </div>
+          <label>Format
+            <select id="formatSelect">
+              <option value="png">PNG</option>
+              <option value="jpg">JPG</option>
+            </select>
+          </label>
+          <div class="checkbox-grid">
+            <label><input id="overlayGuides" type="checkbox" checked> Guides</label>
+            <label><input id="overlayConst" type="checkbox"> Constellations</label>
+            <label><input id="labelGameStars" type="checkbox"> Game labels</label>
+            <label><input id="constStarLabels" type="checkbox"> Star labels</label>
+          </div>
+          <div class="row" style="margin-top: 8px;">
+            <div>
+              <label>Const color</label>
+              <input id="constColor" type="text" value="#70ff70">
+            </div>
+            <div>
+              <label>Guide color</label>
+              <input id="guideColor" type="text" value="#70ff70">
+            </div>
+          </div>
+          <div class="row">
+            <div>
+              <label>Mag limit</label>
+              <input id="magLimit" type="number" step="0.1" value="7.5">
+            </div>
+            <div>
+              <label>Min dist (ly)</label>
+              <input id="minDist" type="number" step="0.1" value="0">
+            </div>
+            <div>
+              <label>Max dist (ly)</label>
+              <input id="maxDist" type="number" step="0.1" value="0">
+            </div>
+          </div>
+          <div class="row" style="margin-top: 8px;">
+            <label><input id="convertDDS" type="checkbox"> DDS</label>
+            <input id="texconvPath" type="text" placeholder="texconv path">
+          </div>
+          <div style="margin-top: 8px;">
+            <label>Game Skymap <input id="gameSkymapPath" type="text" placeholder="Path to milkyway_color.dds"></label>
+            <label style="margin-top: 4px;"><input id="replaceGameSkymap" type="checkbox"> Replace game skymap after DDS</label>
+          </div>
+          <div class="row">
+            <div>
+              <label>Background frame</label>
+              <select id="backgroundFrame">
+                <option value="equatorial">equatorial</option>
+                <option value="galactic">galactic</option>
+              </select>
+            </div>
+            <div>
+              <label>Const frame</label>
+              <select id="constFrame">
+                <option value="equatorial">equatorial</option>
+                <option value="galactic">galactic</option>
+              </select>
+            </div>
+          </div>
+          <label style="margin-top: 8px;"><input id="reloadData" type="checkbox"> Reload data on render</label>
+          <button id="renderBtn" class="primary" style="width: 100%; margin-top: 10px;">Render Skybox</button>
+        </div>
+      </section>
+      <section>
+        <h3 class="collapsible-header collapsed" data-target="calibSection">Calibration</h3>
+        <div id="calibSection" class="collapsible-content collapsed">
+          <label>Ref name <input id="calibName" type="text" value="Alpha Centauri"></label>
+          <label>Ref HIP <input id="calibHip" type="number"></label>
+          <div class="row">
+            <input id="calibX" type="number" step="0.0001" value="-0.4952" placeholder="X">
+            <input id="calibY" type="number" step="0.0001" value="-0.4141" placeholder="Y">
+            <input id="calibZ" type="number" step="0.0001" value="-1.1566" placeholder="Z">
+          </div>
+          <div class="row">
+            <input id="calibScale" type="number" step="0.0001" value="1.0" placeholder="Scale">
+            <input id="calibRoll" type="number" step="0.1" value="0.0" placeholder="Roll">
+            <input id="calibPitch" type="number" step="0.1" value="0.0" placeholder="Pitch">
+            <input id="calibYaw" type="number" step="0.1" value="0.0" placeholder="Yaw">
+          </div>
+        </div>
+      </section>
+      <section>
+        <h3>Viewer</h3>
+        <label>Exposure <input id="exposure" type="range" min="0.2" max="2.5" step="0.1" value="1.0"></label>
+        <div id="readout">Yaw: 0.0°, Pitch: 0.0°, FOV: 75°</div>
+        <div id="status">Loading viewer...</div>
+      </section>
+    </div>
+  </div>
+  <button id="toggleBtn">☰</button>
+
+  <div id="crosshair">
+    <svg viewBox="0 0 48 48">
+      <circle cx="24" cy="24" r="16" />
+      <line x1="24" y1="0" x2="24" y2="8" />
+      <line x1="24" y1="40" x2="24" y2="48" />
+      <line x1="0" y1="24" x2="8" y2="24" />
+      <line x1="40" y1="24" x2="48" y2="24" />
+    </svg>
+  </div>
+
+  <div id="popupOverlay"></div>
+  <div id="starPopup">
+    <div id="popupHeader">
+      <h3 id="popupTitle">Star Information</h3>
+      <button id="popupClose">&times;</button>
+    </div>
+    <div id="popupContent">
+      <div id="popupDescription"></div>
+      <div class="popup-grid" id="popupGrid"></div>
+    </div>
+  </div>
+
+  <div id="container"></div>
+
+  <script>
+    // --- Configuration and defaults ---
+    const STORAGE_KEY = 'skyboxViewerSettings';
+    const DEFAULT_SETTINGS = {
+      systemName: '',
+      systemX: '',
+      systemY: '',
+      systemZ: '',
+      backgroundPath: 'backgrounds/diffuse_background.jpg',
+      sizePreset: '4096x2048',
+      customW: '',
+      customH: '',
+      formatSelect: 'png',
+      overlayGuides: true,
+      overlayConst: false,
+      labelGameStars: false,
+      constStarLabels: false,
+      constColor: '#70ff70',
+      guideColor: '#70ff70',
+      magLimit: '7.5',
+      minDist: '0',
+      maxDist: '0',
+      convertDDS: false,
+      texconvPath: '',
+      gameSkymapPath: '/mnt/c/Users/$WIN_USER/OneDrive/Documents/My Games/Starfield/Data/Textures/sky/milkyway_color.dds',
+      replaceGameSkymap: false,
+      backgroundFrame: 'equatorial',
+      constFrame: 'equatorial',
+      reloadData: false,
+      calibName: 'Alpha Centauri',
+      calibHip: '',
+      calibX: '-0.4952',
+      calibY: '-0.4141',
+      calibZ: '-1.1566',
+      calibScale: '1.0',
+      calibRoll: '0.0',
+      calibPitch: '0.0',
+      calibYaw: '0.0',
+      exposure: '1.0',
+      panelCollapsed: false,
+      renderSectionCollapsed: false,
+      calibSectionCollapsed: true
+    };
+
+    const PERSIST_FIELDS = [
+      'systemName', 'systemX', 'systemY', 'systemZ',
+      'backgroundPath', 'sizePreset', 'customW', 'customH', 'formatSelect',
+      'overlayGuides', 'overlayConst', 'labelGameStars', 'constStarLabels',
+      'constColor', 'guideColor', 'magLimit', 'minDist', 'maxDist',
+      'convertDDS', 'texconvPath', 'gameSkymapPath', 'replaceGameSkymap',
+      'backgroundFrame', 'constFrame', 'reloadData',
+      'calibName', 'calibHip', 'calibX', 'calibY', 'calibZ',
+      'calibScale', 'calibRoll', 'calibPitch', 'calibYaw', 'exposure'
+    ];
+
+    // --- Viewer state ---
+    let camera, scene, renderer, skyboxMesh;
+    let isUserInteracting = false;
+    let onPointerDownPointerX = 0, onPointerDownPointerY = 0;
+    let lon = 0, onPointerDownLon = 0;
+    let lat = 0, onPointerDownLat = 0;
+    let fov = 75;
+
+    const container = document.getElementById("container");
+    const status = document.getElementById("status");
+    const readout = document.getElementById("readout");
+    const ui = document.getElementById("ui");
+    const toggleBtn = document.getElementById("toggleBtn");
+
+    let currentSystem = { name: "Sol", xyz: { x: 0, y: 0, z: 0 } };
+    let selectedStar = null;
+    let renderedStars = []; // Keep track of stars in current render
+    // Track the last rendered system (in HYG coordinates) for accurate calculations
+    let renderedSystem = { name: "Sol", hyg: { x: 0, y: 0, z: 0 }, game: { x: 0, y: 0, z: 0 } };
+    let facedStar = null; // Track the star we're facing for crosshair
+
+    // --- Persistence functions ---
+    function loadSettings() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          return { ...DEFAULT_SETTINGS, ...JSON.parse(saved) };
+        }
+      } catch (e) {
+        console.warn('Failed to load settings:', e);
+      }
+      return { ...DEFAULT_SETTINGS };
+    }
+
+    function saveSettings() {
+      const settings = {};
+      for (const field of PERSIST_FIELDS) {
+        const el = document.getElementById(field);
+        if (el) {
+          if (el.type === 'checkbox') {
+            settings[field] = el.checked;
+          } else {
+            settings[field] = el.value;
+          }
+        }
+      }
+      settings.panelCollapsed = ui.classList.contains('collapsed');
+      settings.renderSectionCollapsed = document.getElementById('renderSection').classList.contains('collapsed');
+      settings.calibSectionCollapsed = document.getElementById('calibSection').classList.contains('collapsed');
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+      } catch (e) {
+        console.warn('Failed to save settings:', e);
+      }
+    }
+
+    function applySettings(settings) {
+      for (const field of PERSIST_FIELDS) {
+        const el = document.getElementById(field);
+        if (el && settings[field] !== undefined) {
+          if (el.type === 'checkbox') {
+            el.checked = settings[field];
+          } else {
+            el.value = settings[field];
+          }
+        }
+      }
+      if (settings.panelCollapsed) ui.classList.add('collapsed');
+      if (settings.renderSectionCollapsed) {
+        document.getElementById('renderSection').classList.add('collapsed');
+        document.querySelector('[data-target="renderSection"]').classList.add('collapsed');
+      } else {
+        document.getElementById('renderSection').classList.remove('collapsed');
+        document.querySelector('[data-target="renderSection"]').classList.remove('collapsed');
+      }
+      if (settings.calibSectionCollapsed) {
+        document.getElementById('calibSection').classList.add('collapsed');
+        document.querySelector('[data-target="calibSection"]').classList.add('collapsed');
+      } else {
+        document.getElementById('calibSection').classList.remove('collapsed');
+        document.querySelector('[data-target="calibSection"]').classList.remove('collapsed');
+      }
+    }
+
+    function resetSettings() {
+      applySettings(DEFAULT_SETTINGS);
+      saveSettings();
+      status.textContent = 'Settings reset to defaults.';
+    }
+
+    // --- Initialize Three.js ---
+    function init() {
+      camera = new THREE.PerspectiveCamera(fov, window.innerWidth / window.innerHeight, 1, 1100);
+      scene = new THREE.Scene();
+
+      const geometry = new THREE.SphereGeometry(500, 60, 40);
+      geometry.scale(-1, 1, 1);
+      const material = new THREE.MeshBasicMaterial({ color: 0x222222, wireframe: true });
+      skyboxMesh = new THREE.Mesh(geometry, material);
+      skyboxMesh.name = "skybox";
+      scene.add(skyboxMesh);
+
+      renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setPixelRatio(window.devicePixelRatio);
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      container.appendChild(renderer.domElement);
+
+      // Load persisted settings
+      const settings = loadSettings();
+      applySettings(settings);
+      renderer.toneMappingExposure = parseFloat(settings.exposure || '1.0');
+
+      status.textContent = "Ready.";
+
+      // Event listeners
+      document.addEventListener("mousedown", onPointerDown);
+      document.addEventListener("mousemove", onPointerMove);
+      document.addEventListener("mouseup", onPointerUp);
+      document.addEventListener("wheel", onDocumentMouseWheel, { passive: false });
+      document.addEventListener("keydown", onKeyDown);
+      window.addEventListener("resize", onWindowResize);
+
+      renderer.domElement.addEventListener("click", onCanvasClick);
+      document.getElementById("searchBtn").addEventListener("click", onSearch);
+      document.getElementById("searchQuery").addEventListener("keypress", (e) => {
+        if (e.key === "Enter") onSearch();
+      });
+      document.getElementById("faceBtn").addEventListener("click", onFaceSelected);
+      document.getElementById("popupClose").addEventListener("click", closeStarPopup);
+      document.getElementById("popupOverlay").addEventListener("click", closeStarPopup);
+      document.getElementById("useTargetBtn").addEventListener("click", onUseAsTarget);
+      document.getElementById("renderBtn").addEventListener("click", onRender);
+      document.getElementById("exposure").addEventListener("input", onExposureChange);
+      document.getElementById("resetBtn").addEventListener("click", resetSettings);
+      toggleBtn.addEventListener("click", () => {
+        ui.classList.toggle('collapsed');
+        saveSettings();
+      });
+
+      // Collapsible sections
+      document.querySelectorAll('.collapsible-header').forEach(header => {
+        header.addEventListener('click', () => {
+          const targetId = header.dataset.target;
+          const target = document.getElementById(targetId);
+          header.classList.toggle('collapsed');
+          target.classList.toggle('collapsed');
+          saveSettings();
+        });
+      });
+
+      // Auto-save on input changes
+      PERSIST_FIELDS.forEach(field => {
+        const el = document.getElementById(field);
+        if (el) {
+          el.addEventListener('change', saveSettings);
+          if (el.type === 'text' || el.type === 'number') {
+            el.addEventListener('input', saveSettings);
+          }
+        }
+      });
+    }
+
+    // --- Star Info Popup ---
+    function closeStarPopup() {
+      document.getElementById("starPopup").classList.remove("visible");
+      document.getElementById("popupOverlay").classList.remove("visible");
+    }
+
+    function getSpectralDescription(spect) {
+      if (!spect) return "unknown spectral class";
+      const classLetter = spect.charAt(0).toUpperCase();
+      const descriptions = {
+        'O': 'a hot blue star',
+        'B': 'a blue-white star',
+        'A': 'a white star',
+        'F': 'a yellow-white star',
+        'G': 'a yellow star (like our Sun)',
+        'K': 'an orange star',
+        'M': 'a cool red star',
+        'L': 'a brown dwarf',
+        'T': 'a cool brown dwarf',
+        'Y': 'an ultra-cool brown dwarf',
+        'D': 'a white dwarf',
+        'W': 'a Wolf-Rayet star',
+        'C': 'a carbon star',
+        'S': 'a zirconium oxide star'
+      };
+      return descriptions[classLetter] || `a star of spectral class ${spect}`;
+    }
+
+    async function showStarPopup(star) {
+      if (!star) {
+        status.textContent = "No star selected.";
+        return;
+      }
+
+      // Ensure we have calibrated coordinates
+      let calibratedXyz = star.calibrated_xyz;
+      if (!calibratedXyz && star.x !== undefined) {
+        const data = await api("/api/calibrate_coords", {
+          hyg_xyz: { x: star.x, y: star.y, z: star.z },
+          calibration: getCalibration()
+        });
+        calibratedXyz = data.calibrated_xyz;
+        star.calibrated_xyz = calibratedXyz;
+      }
+
+      // Calculate distances
+      const PC_TO_LY = 3.26156;
+      const distFromEarthPc = star.dist_pc || (star.x !== undefined ? Math.sqrt(star.x*star.x + star.y*star.y + star.z*star.z) : null);
+      const distFromEarthLy = distFromEarthPc ? distFromEarthPc * PC_TO_LY : null;
+
+      // Calculate distance from currently rendered system using HYG coordinates
+      let distFromCurrentPc = null;
+      let distFromCurrentLy = null;
+      if (star.x !== undefined && renderedSystem.hyg) {
+        const sysHyg = renderedSystem.hyg;
+        const dx = star.x - sysHyg.x;
+        const dy = star.y - sysHyg.y;
+        const dz = star.z - sysHyg.z;
+        distFromCurrentPc = Math.sqrt(dx*dx + dy*dy + dz*dz);
+        distFromCurrentLy = distFromCurrentPc * PC_TO_LY;
+      }
+
+      // Build title
+      const gameName = star.game_name || null;
+      const hygName = star.name || (star.hip ? `HIP ${star.hip}` : "Unknown");
+      let title = gameName && gameName !== hygName ? `${gameName}` : hygName;
+      document.getElementById("popupTitle").textContent = title;
+
+      // Build description
+      const spectDesc = getSpectralDescription(star.spect);
+      let desc = `<strong>${hygName}</strong>`;
+      if (gameName && gameName !== hygName) {
+        desc = `<strong>${gameName}</strong> (known in star catalogs as <strong>${hygName}</strong>)`;
+      }
+      desc += ` is ${spectDesc}`;
+      if (star.spect) {
+        desc += ` with spectral classification <strong>${star.spect}</strong>`;
+      }
+      desc += ".";
+
+      if (distFromEarthLy !== null) {
+        desc += ` It is located approximately <strong>${distFromEarthLy.toFixed(2)} light years</strong> from Earth.`;
+      }
+
+      if (star.mag !== undefined && star.mag !== null) {
+        const brightness = star.mag < 0 ? "very bright" : star.mag < 2 ? "bright" : star.mag < 4 ? "moderately bright" : star.mag < 6 ? "faintly visible to the naked eye" : "too dim for naked-eye viewing";
+        desc += ` With an apparent magnitude of <strong>${star.mag.toFixed(2)}</strong>, it is ${brightness}.`;
+      }
+
+      document.getElementById("popupDescription").innerHTML = desc;
+
+      // Build data grid
+      const grid = document.getElementById("popupGrid");
+      grid.innerHTML = "";
+
+      const addRow = (label, value, highlight = false) => {
+        const labelEl = document.createElement("div");
+        labelEl.className = "popup-label";
+        labelEl.textContent = label;
+        const valueEl = document.createElement("div");
+        valueEl.className = "popup-value" + (highlight ? " highlight" : "");
+        valueEl.textContent = value;
+        grid.appendChild(labelEl);
+        grid.appendChild(valueEl);
+      };
+
+      if (gameName && gameName !== hygName) {
+        addRow("Game Name", gameName, true);
+      }
+      addRow("Catalog Name", hygName);
+      if (star.hip) {
+        addRow("HIP ID", star.hip.toString());
+      }
+      if (star.spect) {
+        addRow("Spectral Class", star.spect);
+      }
+      if (star.mag !== undefined && star.mag !== null) {
+        addRow("Apparent Magnitude", star.mag.toFixed(2));
+      }
+      if (distFromEarthLy !== null) {
+        addRow("Distance from Sol", `${distFromEarthLy.toFixed(2)} ly (${distFromEarthPc.toFixed(2)} pc)`);
+      }
+      if (renderedSystem.name && renderedSystem.name !== "Sol" && distFromCurrentLy !== null) {
+        addRow(`Distance from ${renderedSystem.name}`, `${distFromCurrentLy.toFixed(2)} ly`);
+      }
+      if (star.x !== undefined) {
+        addRow("HYG Coordinates", `(${star.x.toFixed(4)}, ${star.y.toFixed(4)}, ${star.z.toFixed(4)}) pc`);
+      }
+      if (calibratedXyz) {
+        addRow("Game Coordinates", `(${calibratedXyz.x.toFixed(4)}, ${calibratedXyz.y.toFixed(4)}, ${calibratedXyz.z.toFixed(4)})`, true);
+      }
+      if (star.ra !== undefined && star.dec !== undefined) {
+        addRow("RA / Dec", `${star.ra.toFixed(4)}° / ${star.dec.toFixed(4)}°`);
+      }
+
+      // Show popup
+      document.getElementById("popupOverlay").classList.add("visible");
+      document.getElementById("starPopup").classList.add("visible");
+    }
+
+    async function onFaceSelected() {
+      if (!selectedStar) {
+        status.textContent = "No star selected.";
+        return;
+      }
+      // Face the star
+      faceStar(selectedStar);
+      // Show info popup
+      await showStarPopup(selectedStar);
+    }
+
+    function setTextureFromUrl(url) {
+      const loader = new THREE.TextureLoader();
+      loader.load(url, function(texture) {
+        skyboxMesh.material = new THREE.MeshBasicMaterial({ map: texture });
+        skyboxMesh.material.needsUpdate = true;
+        status.textContent = "Texture loaded.";
+      });
+    }
+
+    function onExposureChange(e) {
+      const value = parseFloat(e.target.value);
+      renderer.toneMappingExposure = value;
+      saveSettings();
+    }
+
+    // --- API helper ---
+    async function api(path, payload) {
+      const res = await fetch(path, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload || {})
+      });
+      return res.json();
+    }
+
+    // --- Get current calibration config ---
+    function getCalibration() {
+      return {
+        name: document.getElementById("calibName").value,
+        hip: document.getElementById("calibHip").value || null,
+        target: {
+          x: parseFloat(document.getElementById("calibX").value || "-0.4952"),
+          y: parseFloat(document.getElementById("calibY").value || "-0.4141"),
+          z: parseFloat(document.getElementById("calibZ").value || "-1.1566"),
+        },
+        scale: parseFloat(document.getElementById("calibScale").value || "1.0"),
+        rotation: {
+          roll: parseFloat(document.getElementById("calibRoll").value || "0"),
+          pitch: parseFloat(document.getElementById("calibPitch").value || "0"),
+          yaw: parseFloat(document.getElementById("calibYaw").value || "0"),
+        }
+      };
+    }
+
+    // --- Search function with game star support ---
+    async function onSearch() {
+      const query = document.getElementById("searchQuery").value.trim();
+      if (!query) return;
+
+      // Search both HYG stars and game stars
+      const data = await api("/api/search", {
+        query: query,
+        limit: 10,
+        include_game_stars: true,
+        calibration: getCalibration()
+      });
+
+      const results = document.getElementById("results");
+      results.innerHTML = "";
+
+      (data.results || []).forEach(item => {
+        const div = document.createElement("div");
+        div.className = "result";
+
+        let displayName = item.name;
+        if (item.hip) displayName += ` (HIP ${item.hip})`;
+        if (item.game_name && item.game_name !== item.name) {
+          displayName = `${item.game_name} → ${item.name}`;
+          if (item.hip) displayName += ` (HIP ${item.hip})`;
+        }
+
+        div.innerHTML = displayName;
+        if (item.is_game_star) {
+          const tag = document.createElement("span");
+          tag.className = "game-tag";
+          tag.textContent = "GAME";
+          div.appendChild(tag);
+        }
+
+        div.addEventListener("click", () => {
+          selectedStar = item;
+          updateSelectedInfo();
+        });
+        results.appendChild(div);
+      });
+
+      if ((data.results || []).length === 0) {
+        results.innerHTML = '<div class="result" style="color: var(--text-secondary);">No results found</div>';
+      }
+    }
+
+    function updateSelectedInfo() {
+      const el = document.getElementById("selectedInfo");
+      if (!selectedStar) {
+        el.textContent = "None";
+        return;
+      }
+      let info = selectedStar.name;
+      if (selectedStar.game_name && selectedStar.game_name !== selectedStar.name) {
+        info = `${selectedStar.game_name} → ${selectedStar.name}`;
+      }
+      if (selectedStar.hip) info += ` (HIP ${selectedStar.hip})`;
+      if (selectedStar.mag !== undefined && selectedStar.mag !== null) {
+        info += ` mag ${selectedStar.mag.toFixed(2)}`;
+      }
+      if (selectedStar.calibrated_xyz) {
+        info += `\nGame coords: (${selectedStar.calibrated_xyz.x.toFixed(4)}, ${selectedStar.calibrated_xyz.y.toFixed(4)}, ${selectedStar.calibrated_xyz.z.toFixed(4)})`;
+      }
+      el.textContent = info;
+      el.style.whiteSpace = 'pre-wrap';
+    }
+
+    // --- Use As Target: set system name and calibrated coordinates ---
+    async function onUseAsTarget() {
+      if (!selectedStar) {
+        status.textContent = "No star selected.";
+        return;
+      }
+
+      // If we don't have calibrated coordinates yet, fetch them
+      let calibratedXyz = selectedStar.calibrated_xyz;
+      if (!calibratedXyz && (selectedStar.x !== undefined)) {
+        // Request calibrated coordinates from server
+        const data = await api("/api/calibrate_coords", {
+          hyg_xyz: { x: selectedStar.x, y: selectedStar.y, z: selectedStar.z },
+          calibration: getCalibration()
+        });
+        calibratedXyz = data.calibrated_xyz;
+      }
+
+      // Set the system name (prefer HYG name)
+      document.getElementById("systemName").value = selectedStar.name;
+
+      // Set calibrated game coordinates if available
+      if (calibratedXyz) {
+        document.getElementById("systemX").value = calibratedXyz.x.toFixed(4);
+        document.getElementById("systemY").value = calibratedXyz.y.toFixed(4);
+        document.getElementById("systemZ").value = calibratedXyz.z.toFixed(4);
+      } else if (selectedStar.x !== undefined) {
+        // Fallback to HYG parsec coordinates if no calibration
+        document.getElementById("systemX").value = selectedStar.x.toFixed(4);
+        document.getElementById("systemY").value = selectedStar.y.toFixed(4);
+        document.getElementById("systemZ").value = selectedStar.z.toFixed(4);
+      }
+
+      // Update currentSystem
+      currentSystem = {
+        name: selectedStar.name,
+        xyz: calibratedXyz || { x: selectedStar.x || 0, y: selectedStar.y || 0, z: selectedStar.z || 0 },
+        hip: selectedStar.hip
+      };
+
+      saveSettings();
+      status.textContent = `Target set to ${currentSystem.name}`;
+    }
+
+    // --- Coordinate transforms ---
+    function eqToGal(vec) {
+      const m = [
+        [-0.0548755604, -0.8734370902, -0.4838350155],
+        [0.4941094279, -0.4448296300, 0.7469822445],
+        [-0.8676661490, -0.1980763734, 0.4559837762],
+      ];
+      return [
+        m[0][0] * vec[0] + m[0][1] * vec[1] + m[0][2] * vec[2],
+        m[1][0] * vec[0] + m[1][1] * vec[1] + m[1][2] * vec[2],
+        m[2][0] * vec[0] + m[2][1] * vec[1] + m[2][2] * vec[2],
+      ];
+    }
+
+    function faceStar(star) {
+      if (!star) return;
+      // Use rendered system's HYG coordinates for accurate direction calculation
+      const sysHyg = renderedSystem.hyg || { x: 0, y: 0, z: 0 };
+      const dx = (star.x || 0) - sysHyg.x;
+      const dy = (star.y || 0) - sysHyg.y;
+      const dz = (star.z || 0) - sysHyg.z;
+      let vec = [dx, dy, dz];
+      const bgFrame = document.getElementById("backgroundFrame").value;
+      if (bgFrame === "galactic") vec = eqToGal(vec);
+      const norm = Math.hypot(vec[0], vec[1], vec[2]) || 1;
+      const vx = vec[0] / norm;
+      const vy = vec[1] / norm;
+      const vz = vec[2] / norm;
+      // Convert HYG direction to viewer lon/lat
+      // HYG: x=toward vernal equinox (RA=0), y=toward RA=90°, z=north celestial pole
+      // The viewer camera lon=0 looks at Three.js +X, but HYG RA=0 maps to Three.js -X
+      // due to the texture coordinate offset (lonDeg = atan2(z,x) - 180 in click handler)
+      // So we need: camera_lon = RA + 180 = atan2(vy, vx) + 180
+      const ra = THREE.MathUtils.radToDeg(Math.atan2(vy, vx));
+      lon = ra + 180;
+      lat = THREE.MathUtils.radToDeg(Math.asin(vz));
+      // Track faced star for crosshair
+      facedStar = star;
+      updateCrosshair();
+    }
+
+    function clearCrosshair() {
+      facedStar = null;
+      document.getElementById("crosshair").classList.remove("visible");
+    }
+
+    function updateCrosshair() {
+      const crosshair = document.getElementById("crosshair");
+      if (!facedStar) {
+        crosshair.classList.remove("visible");
+        return;
+      }
+      // Calculate screen position of faced star
+      const sysHyg = renderedSystem.hyg || { x: 0, y: 0, z: 0 };
+      const dx = (facedStar.x || 0) - sysHyg.x;
+      const dy = (facedStar.y || 0) - sysHyg.y;
+      const dz = (facedStar.z || 0) - sysHyg.z;
+      let vec = [dx, dy, dz];
+      const bgFrame = document.getElementById("backgroundFrame").value;
+      if (bgFrame === "galactic") vec = eqToGal(vec);
+      const norm = Math.hypot(vec[0], vec[1], vec[2]) || 1;
+      const vx = vec[0] / norm;
+      const vy = vec[1] / norm;
+      const vz = vec[2] / norm;
+
+      // Convert HYG direction to Three.js world direction
+      // HYG (vx, vy, vz) maps to Three.js as:
+      // Three.js X = -vx (HYG RA=0 maps to Three.js -X)
+      // Three.js Y = vz (HYG Dec/north maps to Three.js Y up)
+      // Three.js Z = -vy (HYG RA=90 maps to Three.js -Z)
+      const worldDir = new THREE.Vector3(-vx, vz, -vy);
+
+      // Project to screen
+      const projected = worldDir.clone().project(camera);
+
+      // Check if in front of camera
+      const cameraDir = new THREE.Vector3();
+      camera.getWorldDirection(cameraDir);
+      if (worldDir.dot(cameraDir) < 0) {
+        crosshair.classList.remove("visible");
+        return;
+      }
+
+      const screenX = (projected.x + 1) / 2 * window.innerWidth;
+      const screenY = (-projected.y + 1) / 2 * window.innerHeight;
+
+      // Check if on screen
+      if (screenX < -24 || screenX > window.innerWidth + 24 ||
+          screenY < -24 || screenY > window.innerHeight + 24) {
+        crosshair.classList.remove("visible");
+        return;
+      }
+
+      crosshair.style.left = (screenX - 24) + "px";
+      crosshair.style.top = (screenY - 24) + "px";
+      crosshair.classList.add("visible");
+    }
+
+    // --- Canvas click to pick star ---
+    async function onCanvasClick(event) {
+      if (event.target.closest("#ui") || event.target.closest("#toggleBtn")) return;
+
+      const rect = renderer.domElement.getBoundingClientRect();
+      const mouse = new THREE.Vector2();
+      mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+
+      const raycaster = new THREE.Raycaster();
+      raycaster.setFromCamera(mouse, camera);
+      const hits = raycaster.intersectObject(skyboxMesh);
+      if (!hits.length) return;
+
+      // Get the hit point in world coordinates
+      const point = hits[0].point.clone().normalize();
+
+      // Convert Three.js world coordinates to equirectangular texture lon/lat.
+      // The sphere geometry is scaled(-1, 1, 1) which affects UV mapping.
+      // UV formula: u = atan2(z, x) / (2π), texture lon = (u - 0.5) * 360
+      // Therefore: lon = atan2(z, x) * (180/π) - 180
+      const latRad = Math.asin(point.y);
+      let lonDeg = THREE.MathUtils.radToDeg(Math.atan2(point.z, point.x)) - 180;
+      // Normalize to [-180, 180]
+      if (lonDeg < -180) lonDeg += 360;
+      const latDeg = THREE.MathUtils.radToDeg(latRad);
+
+      // Resolve current system coordinates
+      const systemX = parseFloat(document.getElementById("systemX").value) || 0;
+      const systemY = parseFloat(document.getElementById("systemY").value) || 0;
+      const systemZ = parseFloat(document.getElementById("systemZ").value) || 0;
+      const systemName = document.getElementById("systemName").value.trim();
+
+      let system = currentSystem;
+      if (systemName || (systemX !== 0 || systemY !== 0 || systemZ !== 0)) {
+        system = {
+          name: systemName || "Custom",
+          xyz: { x: systemX, y: systemY, z: systemZ }
+        };
+      }
+
+      const data = await api("/api/pick", {
+        system: system,
+        lon_deg: lonDeg,
+        lat_deg: latDeg,
+        background_frame: document.getElementById("backgroundFrame").value,
+        mag_limit: parseFloat(document.getElementById("magLimit").value || "7.5"),
+        min_distance_ly: parseFloat(document.getElementById("minDist").value || "0"),
+        max_distance_ly: parseFloat(document.getElementById("maxDist").value || "0"),
+        calibration: getCalibration(),
+        rendered_stars: renderedStars // Send current rendered stars for better matching
+      });
+
+      if (data.hit) {
+        selectedStar = data.hit;
+        updateSelectedInfo();
+        clearCrosshair(); // Clear crosshair when selecting a new star
+        status.textContent = `Selected: ${data.hit.name}`;
+      } else {
+        status.textContent = "No star at that location.";
+      }
+    }
+
+    // --- Render skybox ---
+    async function onRender() {
+      const sizePreset = document.getElementById("sizePreset").value;
+      let width = 4096, height = 2048;
+      if (sizePreset === "8192x4096") {
+        width = 8192; height = 4096;
+      } else if (sizePreset === "custom") {
+        width = parseInt(document.getElementById("customW").value || "4096", 10);
+        height = parseInt(document.getElementById("customH").value || "2048", 10);
+      }
+
+      let system = currentSystem;
+      const systemName = document.getElementById("systemName").value.trim();
+      const systemX = document.getElementById("systemX").value;
+      const systemY = document.getElementById("systemY").value;
+      const systemZ = document.getElementById("systemZ").value;
+
+      if (systemName) {
+        system = { name: systemName };
+        const hip = parseInt(systemName, 10);
+        if (!isNaN(hip)) system.hip = hip;
+      }
+      if (systemX && systemY && systemZ) {
+        system.xyz = { x: parseFloat(systemX), y: parseFloat(systemY), z: parseFloat(systemZ) };
+        if (!system.name) system.name = "Custom";
+      }
+      if (!system.name && selectedStar) {
+        system = { name: selectedStar.name, hip: selectedStar.hip };
+      }
+
+      const payload = {
+        system: system,
+        width: width,
+        height: height,
+        format: document.getElementById("formatSelect").value,
+        background: document.getElementById("backgroundPath").value,
+        background_projection: "equirectangular",
+        background_frame: document.getElementById("backgroundFrame").value,
+        star_frame: "equatorial",
+        label_game_stars: document.getElementById("labelGameStars").checked ? "data/game_stars.csv" : null,
+        overlay_guides: document.getElementById("overlayGuides").checked,
+        guide_color: document.getElementById("guideColor").value,
+        mag_limit: parseFloat(document.getElementById("magLimit").value || "7.5"),
+        min_distance_ly: parseFloat(document.getElementById("minDist").value || "0"),
+        max_distance_ly: parseFloat(document.getElementById("maxDist").value || "0"),
+        overlay_constellations: document.getElementById("overlayConst").checked,
+        constellation_star_labels: document.getElementById("constStarLabels").checked,
+        constellation_color: document.getElementById("constColor").value,
+        constellation_frame: document.getElementById("constFrame").value,
+        convert_dds: document.getElementById("convertDDS").checked,
+        texconv_path: document.getElementById("texconvPath").value || null,
+        game_skymap_path: document.getElementById("replaceGameSkymap").checked ? document.getElementById("gameSkymapPath").value : null,
+        reload_data: document.getElementById("reloadData").checked,
+        calibration: getCalibration(),
+        return_star_list: true // Request the list of rendered stars
+      };
+
+      status.textContent = "Rendering...";
+      const res = await api("/api/render", payload);
+
+      if (res.output) {
+        // Build confirmation message
+        let confirmMsg = "Rendered.";
+        if (res.dds) {
+          confirmMsg += " DDS created.";
+        }
+        if (res.game_skymap_copied) {
+          confirmMsg += " Game skymap replaced.";
+        }
+        status.textContent = confirmMsg + " Reloading...";
+        setTextureFromUrl(res.output + "?t=" + Date.now());
+
+        // Store rendered stars for click detection
+        if (res.rendered_stars) {
+          renderedStars = res.rendered_stars;
+        }
+
+        // Update renderedSystem with HYG coordinates for accurate calculations
+        if (res.system_name) {
+          renderedSystem = {
+            name: res.system_name,
+            hyg: res.system_hyg || { x: 0, y: 0, z: 0 },
+            game: res.system_xyz || { x: 0, y: 0, z: 0 }
+          };
+        }
+
+        // Update currentSystem with resolved info
+        if (res.system_name && res.system_xyz) {
+          currentSystem = {
+            name: res.system_name,
+            xyz: res.system_xyz
+          };
+          // Clear faced star since we have a new render
+          clearCrosshair();
+        }
+      } else if (res.error) {
+        status.textContent = "Error: " + res.error;
+      }
+    }
+
+    // --- Window resize ---
+    function onWindowResize() {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    // --- Mouse/keyboard navigation ---
+    function onPointerDown(event) {
+      if (event.target.closest("#ui") || event.target.closest("#toggleBtn")) return;
+      isUserInteracting = true;
+      onPointerDownPointerX = event.clientX;
+      onPointerDownPointerY = event.clientY;
+      onPointerDownLon = lon;
+      onPointerDownLat = lat;
+    }
+
+    function onPointerMove(event) {
+      if (isUserInteracting) {
+        lon = (onPointerDownPointerX - event.clientX) * 0.1 + onPointerDownLon;
+        lat = (event.clientY - onPointerDownPointerY) * 0.1 + onPointerDownLat;
+      }
+    }
+
+    function onPointerUp() {
+      isUserInteracting = false;
+    }
+
+    function onDocumentMouseWheel(event) {
+      if (event.target.closest("#ui")) return;
+      event.preventDefault();
+      fov = THREE.MathUtils.clamp(fov + event.deltaY * 0.05, 10, 120);
+      camera.fov = fov;
+      camera.updateProjectionMatrix();
+    }
+
+    function onKeyDown(event) {
+      if (event.target.tagName === 'INPUT' || event.target.tagName === 'SELECT') return;
+      const speed = event.shiftKey ? 5 : 2;
+      switch (event.key) {
+        case "ArrowUp":
+        case "w":
+        case "W":
+          lat += speed;
+          break;
+        case "ArrowDown":
+        case "s":
+        case "S":
+          lat -= speed;
+          break;
+        case "ArrowLeft":
+        case "a":
+        case "A":
+          lon -= speed;
+          break;
+        case "ArrowRight":
+        case "d":
+        case "D":
+          lon += speed;
+          break;
+        case "+":
+        case "=":
+          fov = Math.max(10, fov - 5);
+          camera.fov = fov;
+          camera.updateProjectionMatrix();
+          break;
+        case "-":
+        case "_":
+          fov = Math.min(120, fov + 5);
+          camera.fov = fov;
+          camera.updateProjectionMatrix();
+          break;
+      }
+    }
+
+    function update() {
+      lat = Math.max(-89, Math.min(89, lat));
+      const phi = THREE.MathUtils.degToRad(90 - lat);
+      const theta = THREE.MathUtils.degToRad(lon);
+      const x = 500 * Math.sin(phi) * Math.cos(theta);
+      const y = 500 * Math.cos(phi);
+      const z = 500 * Math.sin(phi) * Math.sin(theta);
+      camera.lookAt(x, y, z);
+      readout.textContent = `Yaw: ${lon.toFixed(1)}°, Pitch: ${lat.toFixed(1)}°, FOV: ${fov.toFixed(0)}°`;
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+      update();
+      updateCrosshair();
+      renderer.render(scene, camera);
+    }
+
+    // --- Start ---
+    init();
+    animate();
+  </script>
+</body>
+</html>

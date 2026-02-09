@@ -1,0 +1,122 @@
+Star_system, Faction, Bodies, Inorg_Res,Org_Res,Flora,Fauna,Level,X,Y,Z
+Al-Battani		20	19	8	Yes	Yes	35	-14.4150	-5.5083	0.7340
+Alchiba		28	27	0			50	-13.5577	-0.4979	-6.2483
+Algorab		8	13	9	Yes	Yes	70	-25.3161	-3.3177	-7.5706
+Alpha Andraste		7	18	11	Yes	Yes	30	4.1497	1.2741	6.1811
+Alpha Centauri	United Colonies	12	18	12	Yes	Yes	1
+Alpha Marae		12	20	2		Yes	45	-2.1046	-16.2029	-0.3031
+Alpha Ternion		17	28	12	Yes	Yes	60	-11.5302	-20.8795 -4.7975
+Alpha Tirna		31	31	12	Yes	Yes	35	-6.9995	0.4122	-5.9886
+Altair		13	25	6	Yes	Yes	15	2.3555	-4.4873	0.7907
+Andromas		11	23	9	Yes	Yes	15	0.4344	-7.3437	3.8657
+Aranae		11	10	3	Yes	Yes	15	-3.9440	-3.8570	-2.1632
+Archimedes		12	27	13	Yes	Yes	75
+Arcturus		4	10	7	Yes	Yes	15
+Bannoc		7	19	7	Yes	Yes	50
+Bannoc Secondus		1	3	0			50
+Bara		17	23	10	Yes	Yes	45	-16.1838	-6.5740	4.2837
+Bardeen		20	28	17	Yes	Yes	70
+Barnard's Star		1	4	0			1
+Bel		18	24	14	Yes	Yes	55	-18.4229	-12.0503	-1.2771
+Bessel		5	12	0			10
+Beta Andraste		5	11	2		Yes	20
+Beta Marae		21	23	15	Yes	Yes	45
+Beta Ternion		5	16	16	Yes	Yes	40
+Beta Tirna		1	3	0			35
+Bohr		15	26	12	Yes	Yes	75
+Bolivar		1	7	7	Yes	Yes	35
+Bradbury		9	20	10	Yes	Yes	20
+Carinae		14	23	0			20
+Celebrai		7	16	14	Yes	Yes	70
+Charybdis		19	31	17	Yes	Yes	65
+Cheyenne	Freestar Collective	35	32	16	Yes	Yes	1	-4.6503	-4.3134	2.1964
+Copernicus		15	21	13	Yes	Yes	30
+Copernicus Minor		3	7	3		Yes	30
+Decaran		16	21	9	Yes	Yes	60
+Delta Pavonis		19	25	10	Yes	Yes	25
+Delta Vulpes		15	18	3		Yes	50
+Denebola		8	15	8	Yes	Yes	30
+Enlil		15	24	11	Yes	Yes	65
+Eridani		23	28	13	Yes	Yes	20
+Eta Cassiopeia		9	18	11	Yes	Yes	20
+Fermi		29	31	13	Yes	Yes	75
+Feynman		23	33	11	Yes	Yes	55
+Foucault		29	30	3		Yes	60
+Freya		17	27	13	Yes	Yes	40
+Gamma Vulpes		13	21	14	Yes	Yes	50
+Groombridge		26	26	11	Yes	Yes	25
+Guniibuu		27	29	13	Yes	Yes	20
+Hawking		11	20	10	Yes	Yes	75
+Heinlein		23	27	7	Yes	Yes	45
+Heisenberg		19	26	10	Yes	Yes	55
+Huygens		20	28	14	Yes	Yes	75
+Hyla		22	33	10	Yes	Yes	40
+Indum		15	24	5	Yes	Yes	20
+Ixyll		26	29	15	Yes	Yes	40
+Jaffa		20	31	11	Yes	Yes	35
+Kang		20	24	7	Yes	Yes	60	-17.3856	-14.6554	-6.6101
+Kapteyn's Star		2	8	0			10
+Katydid		5	18	8	Yes	Yes	75
+KavnykDLC	House Va'ruun	10	21	8	Yes	Yes	35
+Khayyam		18	27	12	Yes	Yes	45
+Kryx	Crimson Fleet	8	19	4	Yes	Yes	20	-6.6170	-10.0394	1.5516
+Kumasi		28	31	17	Yes	Yes	25	-7.9223	0.6565	5.4028
+Lantana		21	28	11	Yes	Yes	30
+Leonis		17	24	13	Yes	Yes	65
+Leviathan		10	18	8	Yes	Yes	55
+Linnaeus		12	26	6	Yes	Yes	45
+Lunara	Crimson Fleet	25	25	9	Yes	Yes	25
+Luyten's Star		1	9	0			5
+Maal		23	30	11	Yes	Yes	60
+Maheo		16	24	2	Yes	Yes	1
+Marduk		18	25	14	Yes	Yes	70
+Masada		17	23	13	Yes	Yes	75
+McClure		7	14	9	Yes	Yes	20
+Moloch		14	23	13	Yes	Yes	40
+Muphrid		29	30	12	Yes	Yes	15
+Narion	Freestar Collective	15	27	9	Yes	Yes	1	0.1209	-5.0771	0.2217
+Nemeria		19	26	11	Yes	Yes	35
+Newton		12	21	13	Yes	Yes	55
+Nikola		19	22	0			40
+Nirah		7	14	10	Yes	Yes	55
+Nirvana		7	18	11	Yes	Yes	40
+Oborum Prime		10	17	11	Yes	Yes	20
+Oborum Proxima		1	4	0			25
+Olympus		13	21	12	Yes	Yes	10	-3.8871	-3.8021	-2.1326
+Ophion		2	3	0			45
+Piazzi		21	21	9	Yes	Yes	10	1.9794	-1.8636	2.1819
+Porrima		21	24	11	Yes	Yes	30
+Procyon A		15	23	12	Yes	Yes	10
+Procyon B		1	4	0			5
+Proxima Ternion		8	16	8	Yes	Yes	65
+Pyraas		21	25	15	Yes	Yes	70
+Rana		24	29	13	Yes	Yes	65
+Rasalhague		7	16	6	Yes	Yes	40
+Rivera		11	19	11	Yes	Yes	35
+Rutherford		21	24	11	Yes	Yes	45
+Sagan	Crimson Fleet	1	3	0			15
+Sakharov		2	3	0			15
+Schrodinger		22	32	16	Yes	Yes	65
+Serpentis		15	21	15	Yes	Yes	55
+Shoza		20	26	18	Yes	Yes	35
+Sirius		6	17	0			5
+Sol	United Colonies	30	22	0			1	0	0	0
+Sparta		21	28	11	Yes	Yes	60
+Strix		15	24	10	Yes	Yes	70
+Syrma		18	25	11	Yes	Yes	55
+Tau Ceti		18	27	12	Yes	Yes	10
+The Pup		1	3	0			10	3.1541	1.5395	-1.0023
+Tidacha		4	14	11	Yes	Yes	45
+Toliman		5	8	9	Yes	Yes	5
+Ursae Majoris		6	16	12	Yes	Yes	30
+Ursae Minoris		6	17	9	Yes	Yes	20
+Valo		11	17	12	Yes	Yes	5	0.1220	-5.0792	0.2217
+Van Maanen's Star		1	3	0			10
+Vega		10	17	9	Yes	Yes	25
+Verne		17	27	10	Yes	Yes	70
+Volii	Freestar Collective	11	14	3	Yes	Yes	5	-7.6512	-2.7247	-2.6878
+Wolf	United Colonies	3	7	0			5
+Xi Ophiuchi		23	29	8	Yes	Yes	50
+Zelazny		18	27	13	Yes	Yes	60
+Zeta Ophiuchi		19	26	12	Yes	Yes	50
+Zosma		13	17	9	Yes	Yes	50
