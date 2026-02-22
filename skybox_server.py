@@ -257,6 +257,14 @@ def _constellation_overlays(catalog, params: Dict[str, Any]):
     return segments, const_labels, star_labels
 
 
+def _build_equator_labels(params: Dict[str, Any]) -> Optional[List[Tuple[str, Tuple[float, float, float]]]]:
+    """Build equator label entries from request parameters."""
+    label_text = params.get("equator_labels")
+    if label_text:
+        return [(label_text, (0.0, 0.0, 0.0))]
+    return None
+
+
 class SkyboxHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         parsed = urlparse(self.path)
@@ -502,7 +510,7 @@ class SkyboxHandler(BaseHTTPRequestHandler):
                 int(payload.get("guide_alpha", 140)),
                 float(payload.get("guide_meridian_step", 15.0)),
                 int(payload.get("guide_label_font_size", 14)),
-                float(payload.get("guide_label_lat", 60.0)),
+                float(payload.get("guide_label_lat", 23.5)),
                 const_segments,
                 const_labels,
                 star_labels,
@@ -513,6 +521,10 @@ class SkyboxHandler(BaseHTTPRequestHandler):
                 int(payload.get("constellation_star_font_size", 12)),
                 int(payload.get("constellation_star_alpha", 160)),
                 payload.get("constellation_frame", "equatorial"),
+                _build_equator_labels(payload),
+                payload.get("equator_label_color", "#ffffff"),
+                int(payload.get("equator_label_font_size", 12)),
+                int(payload.get("equator_label_alpha", 200)),
             )
             os.makedirs(OUT_DIR, exist_ok=True)
             filename = f"{system_name}_{width}x{height}.{format_name}"

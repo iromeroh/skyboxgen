@@ -46,6 +46,14 @@ python3 -m skyboxgen.cli interactive --system-name "Kryx" \
   --format png
 ```
 
+With equator labels (3 copies of the system name at the equator for in-game visibility):
+
+```
+python3 -m skyboxgen.cli interactive --system-name "Sol" \
+  --equator-labels "Sol" --equator-label-color "#ffffff" \
+  --overlay-guides --format png
+```
+
 ## Batch mode
 
 ```
@@ -81,6 +89,8 @@ python3 skybox_server.py
 ```
 
 Then open `http://localhost:8000/`.
+
+The web viewer supports all rendering options including equator labels (enter text in the "Equator labels (3x)" field), guide overlays, constellation lines, and DDS conversion.
 
 ## Background preprocessing
 
@@ -165,10 +175,11 @@ python3 -m skyboxgen.cli import-starfield --input starfield_systems.txt \
 - `--min-distance-ly` and `--max-distance-ly` limit which stars render by distance from the current system (in light years).
 - De-star filtering is controlled via `--background-destar` plus `--destar-percentile`, `--destar-blur`, and `--destar-expand`.
 - Use `--label-game-stars data/game_stars.csv` to label Starfield systems in the skybox, and `--overlay-guides` for galactic equator/tropics and meridians.
-- Guide labels can be tuned with `--guide-label-font-size` and `--guide-label-lat`; meridian spacing with `--guide-meridian-step`.
+- Guide labels can be tuned with `--guide-label-font-size` and `--guide-label-lat` (default 23.5° at the tropics for better readability); meridian spacing with `--guide-meridian-step`.
 - Use `--overlay-constellations` with `data/ConstellationLines.csv` to draw constellation lines. Defaults are boosted for visibility; tune with `--constellation-alpha` and `--constellation-line-width`.
 - Constellation overlays default to the equatorial frame (`--constellation-frame equatorial`) so Sol matches familiar sky maps.
 - For best alignment between star field and constellation lines, set `--background-frame` and `--constellation-frame` to the same value.
+- Use `--equator-labels "Name"` to place 3 copies of a label at the equator, spaced 120° apart, ensuring visibility from any in-game viewing angle. Customize with `--equator-label-color` (default white), `--equator-label-font-size`, and `--equator-label-alpha`.
 - Use `--convert-dds` to run `texconv` after rendering; output goes to `out_dds` and uses `BC7_UNORM` by default. If `texconv.exe` is on PATH but not detected, pass `--texconv-path` explicitly.
 - Constellation lookup uses the B1875 boundary data from `constbnd/conbound.c` without precession.
 - DDS output depends on your Pillow build. If DDS save fails, convert PNGs using an external tool like `texconv`.

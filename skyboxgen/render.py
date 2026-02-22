@@ -44,7 +44,7 @@ def render_skybox(
     guide_alpha: int = 140,
     guide_meridian_step: float = 15.0,
     guide_label_font_size: int = 14,
-    guide_label_lat: float = 60.0,
+    guide_label_lat: float = 23.5,
     constellation_segments: Optional[List[Tuple[Tuple[float, float, float], Tuple[float, float, float]]]] = None,
     constellation_labels: Optional[List[Tuple[str, Tuple[float, float, float]]]] = None,
     constellation_star_labels: Optional[List[Tuple[str, Tuple[float, float, float]]]] = None,
@@ -55,6 +55,10 @@ def render_skybox(
     constellation_star_font_size: int = 12,
     constellation_star_alpha: int = 160,
     constellation_frame: str = "equatorial",
+    equator_label_entries: Optional[List[Tuple[str, Tuple[float, float, float]]]] = None,
+    equator_label_color: str = "#ffffff",
+    equator_label_font_size: int = 12,
+    equator_label_alpha: int = 200,
 ) -> Image.Image:
     base = np.zeros((height, width, 3), dtype=np.float32)
     if background_path:
@@ -138,7 +142,7 @@ def render_skybox(
     img = np.clip(base * 255.0, 0, 255).astype(np.uint8)
     out = Image.fromarray(img, mode="RGB")
 
-    if label_entries or guide_enable or constellation_segments:
+    if label_entries or guide_enable or constellation_segments or equator_label_entries:
         out = out.convert("RGBA")
         draw = ImageDraw.Draw(out, "RGBA")
         if guide_enable:
@@ -184,6 +188,16 @@ def render_skybox(
                 label_font_size,
                 label_include_hip,
                 label_alpha,
+            )
+        if equator_label_entries:
+            _draw_equator_labels(
+                draw,
+                equator_label_entries,
+                width,
+                height,
+                equator_label_color,
+                equator_label_font_size,
+                equator_label_alpha,
             )
         out = out.convert("RGB")
     return out
@@ -347,6 +361,43 @@ def _draw_labels(
             label = f"{label} (HIP {hip})"
         draw.ellipse([(x - 2, y - 2), (x + 2, y + 2)], fill=dot_color)
         draw.text((x + 4, y + 4), label, fill=text_color, font=font)
+
+
+def _draw_equator_labels(
+    draw: ImageDraw.ImageDraw,
+    label_entries: List[Tuple[str, Tuple[float, float, float]]],
+    width: int,
+    height: int,
+    color: str,
+    font_size: int,
+    alpha: int,
+) -> None:
+    """Draw star names at 3 positions along the equator, spaced 120 degrees apart.
+
+    This ensures the star name is visible from any viewing angle when the
+    skybox is used in-game. Each label is placed at the vertical center
+    (equator) of the equirectangular projection.
+    """
+    font = _load_font(font_size)
+    text_color = _parse_color(color, alpha)
+    y_equator = height / 2  # Equator is at the vertical center
+
+    # Place 3 labels at longitudes 0, 120, and 240 degrees
+    offsets_deg = [0.0, 120.0, 240.0]
+    for name, _ in label_entries:
+        for offset_deg in offsets_deg:
+            lon_rad = math.radians(offset_deg - 180.0)  # Convert to -pi..pi range
+            x = (lon_rad + math.pi) / (2 * math.pi) * width
+            # Center the text horizontally at the position
+            bbox = font.getbbox(name)
+            text_width = bbox[2] - bbox[0]
+            text_height = bbox[3] - bbox[1]
+            draw.text(
+                (x - text_width / 2, y_equator - text_height / 2),
+                name,
+                fill=text_color,
+                font=font,
+            )
 
 
 def _parse_color(color: str, alpha: int) -> Tuple[int, int, int, int]:

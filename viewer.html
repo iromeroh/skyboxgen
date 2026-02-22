@@ -415,6 +415,16 @@
               <input id="guideColor" type="text" value="#70ff70">
             </div>
           </div>
+          <div class="row" style="margin-top: 8px;">
+            <div style="flex: 2;">
+              <label>Equator labels (3x)</label>
+              <input id="equatorLabels" type="text" placeholder="e.g. Sol">
+            </div>
+            <div>
+              <label>Color</label>
+              <input id="equatorLabelColor" type="text" value="#ffffff">
+            </div>
+          </div>
           <div class="row">
             <div>
               <label>Mag limit</label>
@@ -528,6 +538,8 @@
       constStarLabels: false,
       constColor: '#70ff70',
       guideColor: '#70ff70',
+      equatorLabels: '',
+      equatorLabelColor: '#ffffff',
       magLimit: '7.5',
       minDist: '0',
       maxDist: '0',
@@ -557,7 +569,7 @@
       'systemName', 'systemX', 'systemY', 'systemZ',
       'backgroundPath', 'sizePreset', 'customW', 'customH', 'formatSelect',
       'overlayGuides', 'overlayConst', 'labelGameStars', 'constStarLabels',
-      'constColor', 'guideColor', 'magLimit', 'minDist', 'maxDist',
+      'constColor', 'guideColor', 'equatorLabels', 'equatorLabelColor', 'magLimit', 'minDist', 'maxDist',
       'convertDDS', 'texconvPath', 'gameSkymapPath', 'replaceGameSkymap',
       'backgroundFrame', 'constFrame', 'reloadData',
       'calibName', 'calibHip', 'calibX', 'calibY', 'calibZ',
@@ -1236,6 +1248,8 @@
         label_game_stars: document.getElementById("labelGameStars").checked ? "data/game_stars.csv" : null,
         overlay_guides: document.getElementById("overlayGuides").checked,
         guide_color: document.getElementById("guideColor").value,
+        equator_labels: document.getElementById("equatorLabels").value || null,
+        equator_label_color: document.getElementById("equatorLabelColor").value,
         mag_limit: parseFloat(document.getElementById("magLimit").value || "7.5"),
         min_distance_ly: parseFloat(document.getElementById("minDist").value || "0"),
         max_distance_ly: parseFloat(document.getElementById("maxDist").value || "0"),

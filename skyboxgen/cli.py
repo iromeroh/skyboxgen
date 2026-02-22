@@ -155,6 +155,7 @@ def run_interactive(args: argparse.Namespace) -> None:
     height = args.height or args.size // 2
     label_entries = _load_label_entries(args, catalog, exclude_name=system_name)
     const_data = _load_constellation_overlays(args, catalog)
+    equator_labels = _build_equator_labels(args, system_name)
     img = render_skybox(
         catalog.arrays,
         system_xyz,
@@ -200,6 +201,10 @@ def run_interactive(args: argparse.Namespace) -> None:
         args.constellation_star_font_size,
         args.constellation_star_alpha,
         args.constellation_frame,
+        equator_labels,
+        args.equator_label_color,
+        args.equator_label_font_size,
+        args.equator_label_alpha,
     )
     name = _sanitize_name(system_name)
     out_path = os.path.join(args.out, f"{name}_{width}x{height}.{args.format}")
@@ -230,6 +235,7 @@ def run_batch(args: argparse.Namespace) -> None:
             system_name, system_xyz, star = resolve_game_star(catalog, entry)
             label_entries = _load_label_entries(args, catalog, exclude_name=system_name)
             const_data = _load_constellation_overlays(args, catalog)
+            equator_labels = _build_equator_labels(args, system_name)
             img = render_skybox(
                 catalog.arrays,
                 system_xyz,
@@ -275,6 +281,10 @@ def run_batch(args: argparse.Namespace) -> None:
                 args.constellation_star_font_size,
                 args.constellation_star_alpha,
                 args.constellation_frame,
+                equator_labels,
+                args.equator_label_color,
+                args.equator_label_font_size,
+                args.equator_label_alpha,
             )
             name = _sanitize_name(system_name)
             out_path = os.path.join(args.out, f"{name}_{width}x{height}.{args.format}")
@@ -312,6 +322,7 @@ def run_batch(args: argparse.Namespace) -> None:
         system_name = star.proper or star.bf or star.gl or f"HIP{star.hip}"
         label_entries = _load_label_entries(args, catalog, exclude_name=system_name)
         const_data = _load_constellation_overlays(args, catalog)
+        equator_labels = _build_equator_labels(args, system_name)
         img = render_skybox(
             catalog.arrays,
             (star.x, star.y, star.z),
@@ -357,6 +368,10 @@ def run_batch(args: argparse.Namespace) -> None:
             args.constellation_star_font_size,
             args.constellation_star_alpha,
             args.constellation_frame,
+            equator_labels,
+            args.equator_label_color,
+            args.equator_label_font_size,
+            args.equator_label_alpha,
         )
         name = _sanitize_name(system_name)
         out_path = os.path.join(args.out, f"{name}_{width}x{height}.{args.format}")
@@ -546,12 +561,16 @@ def _add_render_args(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--label-font-size", type=int, default=18)
     parser.add_argument("--label-alpha", type=int, default=200)
     parser.add_argument("--label-no-hip", action="store_true")
+    parser.add_argument("--equator-labels", help="Text to display as 3 labels at the equator (e.g., star/system name)")
+    parser.add_argument("--equator-label-color", default="#ffffff")
+    parser.add_argument("--equator-label-font-size", type=int, default=12)
+    parser.add_argument("--equator-label-alpha", type=int, default=200)
     parser.add_argument("--overlay-guides", action="store_true")
     parser.add_argument("--guide-color", default="#70ff70")
     parser.add_argument("--guide-alpha", type=int, default=140)
     parser.add_argument("--guide-meridian-step", type=float, default=15.0)
     parser.add_argument("--guide-label-font-size", type=int, default=14)
-    parser.add_argument("--guide-label-lat", type=float, default=60.0)
+    parser.add_argument("--guide-label-lat", type=float, default=23.5)
     parser.add_argument("--overlay-constellations", action="store_true")
     parser.add_argument("--constellation-lines", default="data/ConstellationLines.csv")
     parser.add_argument("--constellation-color", default="#70ff70")
@@ -753,6 +772,15 @@ def _load_constellation_overlays(args: argparse.Namespace, catalog):
     if not args.constellation_star_labels:
         star_labels = []
     return (segments, const_labels, star_labels)
+
+
+def _build_equator_labels(args: argparse.Namespace, system_name: str) -> Optional[list]:
+    """Build equator label entries from CLI args or system name."""
+    label_text = getattr(args, "equator_labels", None)
+    if label_text:
+        # User provided explicit text
+        return [(label_text, (0.0, 0.0, 0.0))]
+    return None
 
 
 def _write_nearby_suggestions(systems, catalog, out_path: str, max_distance_ly: float) -> None:
