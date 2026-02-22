@@ -1,23 +1,23 @@
 game_name,hyg_query,hip,ra_deg,dec_deg,dist_pc,x,y,z,fictional,hyg_match
-Al-Battani,Al-Battani,65352,,,,,,,false,GJ 3781A|65352
-Alchiba,Alchiba,59199,,,,,,,false,Alchiba|59199
-Algorab,Algorab,60965,,,,,,,false,Algorab|60965
-Alpha Andraste,Alpha Andraste,5336,,,,,,,false,30Mu  Cas|5336
-Alpha Centauri,Alpha Centauri,71683,,,,,,,false,Rigil Kentaurus|71683
-Alpha Marae,Alpha Marae,85667,,,,,,,false,Gl 678A|85667
-Alpha Ternion,Alpha Ternion,,,,,,,,false,
-Alpha Tirna,Alpha Tirna,57443,,,,,,,false,Gl 442A|57443
-Altair,Altair,97649,,,,,,,false,Altair|97649
-Andromas,Andromas,86974,,,,,,,false,86Mu  Her|86974
-Aranae,Aranae,73182,,,,,,,false,Gl 570B|73182
+Al-Battani,Al-Battani,65352,,,,-14.415,-5.5083,0.734,true,GJ 3781A|65352
+Alchiba,Alchiba,59199,,,,-13.5577,-0.4979,-6.2483,true,Alchiba|59199
+Algorab,Algorab,60965,,,,-25.3161,-3.3177,-7.5706,true,Algorab|60965
+Alpha Andraste,Alpha Andraste,5336,,,,4.1497,1.2741,6.1811,true,30Mu  Cas|5336
+Alpha Centauri,Alpha Centauri,71683,,,,-0.4952,-0.4141,-1.1566,true,Rigil Kentaurus|71683
+Alpha Marae,Alpha Marae,85667,,,,-2.1046,-16.2029,-0.3031,true,Gl 678A|85667
+Alpha Ternion,Alpha Ternion,,,,,-11.5302,,,true,
+Alpha Tirna,Alpha Tirna,57443,,,,-6.9995,0.4122,-5.9886,true,Gl 442A|57443
+Altair,Altair,97649,,,,2.3555,-4.4873,0.7907,true,Altair|97649
+Andromas,Andromas,86974,,,,0.4344,-7.3437,3.8657,true,86Mu  Her|86974
+Aranae,Aranae,73182,,,,-3.944,-3.857,-2.1632,true,Gl 570B|73182
 Archimedes,Archimedes,,,,,,,,false,
-Arcturus,Arcturus,,,,,,,,false,
+Arcturus,Arcturus,69673,,,,-8.8234,-5.9325,3.6989,true,Arcturus|69673
 Bannoc,Bannoc,,,,,,,,false,
 Bannoc Secondus,Bannoc Secondus,,,,,,,,false,
-Bara,Bara,65721,,,,,,,false,70    Vir|65721
+Bara,Bara,65721,,,,-16.1838,-6.574,4.2837,true,70    Vir|65721
 Bardeen,Bardeen,,,,,,,,false,
-Barnard's Star,Barnard's Star,,,,,,,,false,
-Bel,Bel,69414,,,,,,,false,GJ 3830|69414
+Barnard's Star,Barnard's Star,87937,,,,-0.0174,-1.8166,0.1491,true,Barnard's Star|87937
+Bel,Bel,69414,,,,-18.4229,-12.0503,-1.2771,true,GJ 3830|69414
 Bessel,Bessel,,,,,,,,false,
 Beta Andraste,Beta Andraste,,,,,,,,false,
 Beta Marae,Beta Marae,,,,,,,,false,
@@ -29,13 +29,13 @@ Bradbury,Bradbury,,,,,,,,false,
 Carinae,Carinae,,,,,,,,false,
 Celebrai,Celebrai,,,,,,,,false,
 Charybdis,Charybdis,,,,,,,,false,
-Cheyenne,Cheyenne,72659,,,,,,,false,37Xi  Boo|72659
-Copernicus,Copernicus,,,,,,,,false,
+Cheyenne,Cheyenne,72659,,,,-4.6503,-4.3134,2.1964,true,37Xi  Boo|72659
+Copernicus,Copernicus,43587,,,,-7.4293,7.9255,5.8567,true,Copernicus|43587
 Copernicus Minor,Copernicus Minor,,,,,,,,false,
 Decaran,Decaran,,,,,,,,false,
 Delta Pavonis,Delta Pavonis,,,,,,,,false,
 Delta Vulpes,Delta Vulpes,,,,,,,,false,
-Denebola,Denebola,,,,,,,,false,
+Denebola,Denebola,57632,,,,-10.6339,0.508,2.7675,true,Denebola|57632
 Enlil,Enlil,,,,,,,,false,
 Eridani,Eridani,,,,,,,,false,
 Eta Cassiopeia,Eta Cassiopeia,,,,,,,,false,
@@ -45,7 +45,7 @@ Foucault,Foucault,,,,,,,,false,
 Freya,Freya,,,,,,,,false,
 Gamma Vulpes,Gamma Vulpes,,,,,,,,false,
 Groombridge,Groombridge,,,,,,,,false,
-Guniibuu,Guniibuu,,,,,,,,false,
+Guniibuu,Guniibuu,84405,,,,-1.027,-5.2048,-2.657,true,Guniibuu|84405
 Hawking,Hawking,,,,,,,,false,
 Heinlein,Heinlein,,,,,,,,false,
 Heisenberg,Heisenberg,,,,,,,,false,
@@ -54,27 +54,27 @@ Hyla,Hyla,,,,,,,,false,
 Indum,Indum,,,,,,,,false,
 Ixyll,Ixyll,,,,,,,,false,
 Jaffa,Jaffa,,,,,,,,false,
-Kang,Kang,71743,,,,,,,false,HIP71743|71743
-Kapteyn's Star,Kapteyn's Star,,,,,,,,false,
+Kang,Kang,71743,,,,-17.3856,-14.6554,-6.6101,true,HIP71743|71743
+Kapteyn's Star,Kapteyn's Star,24186,,,,0.579,2.7052,-2.7682,true,Kapteyn's Star|24186
 Katydid,Katydid,,,,,,,,false,
 KavnykDLC,KavnykDLC,,,,,,,,false,
 Khayyam,Khayyam,,,,,,,,false,
-Kryx,Kryx,77257,,,,,,,false,27Lam Ser|77257
-Kumasi,Kumasi,56997,,,,,,,false,61    UMa|56997
+Kryx,Kryx,77257,,,,-6.617,-10.0394,1.5516,true,27Lam Ser|77257
+Kumasi,Kumasi,56997,,,,-7.9223,0.6565,5.4028,true,61    UMa|56997
 Lantana,Lantana,,,,,,,,false,
 Leonis,Leonis,,,,,,,,false,
 Leviathan,Leviathan,,,,,,,,false,
 Linnaeus,Linnaeus,,,,,,,,false,
 Lunara,Lunara,,,,,,,,false,
-Luyten's Star,Luyten's Star,,,,,,,,false,
+Luyten's Star,Luyten's Star,36208,,,,-1.4095,3.5149,0.3464,true,Luyten's Star|36208
 Maal,Maal,,,,,,,,false,
 Maheo,Maheo,,,,,,,,false,
 Marduk,Marduk,,,,,,,,false,
 Masada,Masada,,,,,,,,false,
 McClure,McClure,,,,,,,,false,
 Moloch,Moloch,,,,,,,,false,
-Muphrid,Muphrid,,,,,,,,false,
-Narion,Narion,88601,,,,,,,false,70    Oph|88601
+Muphrid,Muphrid,67927,,,,-9.4877,-5.1881,3.5967,true,Muphrid|67927
+Narion,Narion,88601,,,,0.1209,-5.0771,0.2217,true,70    Oph|88601
 Nemeria,Nemeria,,,,,,,,false,
 Newton,Newton,,,,,,,,false,
 Nikola,Nikola,,,,,,,,false,
@@ -82,16 +82,16 @@ Nirah,Nirah,,,,,,,,false,
 Nirvana,Nirvana,,,,,,,,false,
 Oborum Prime,Oborum Prime,,,,,,,,false,
 Oborum Proxima,Oborum Proxima,,,,,,,,false,
-Olympus,Olympus,103039,,,,,,,false,Gl 570A|73184
+Olympus,Olympus,73184,,,,-3.8871,-3.8021,-2.1326,true,Gl 570A|73184
 Ophion,Ophion,,,,,,,,false,
-Piazzi,Piazzi,104214,,,,,,,false,61    Cyg|104214
-Porrima,Porrima,,,,,,,,false,
+Piazzi,Piazzi,104214,,,,1.9794,-1.8636,2.1819,true,61    Cyg|104214
+Porrima,Porrima,61941,,,,-11.4886,-2.1117,-0.2956,true,Porrima|61941
 Procyon A,Procyon A,,,,,,,,false,
 Procyon B,Procyon B,,,,,,,,false,
 Proxima Ternion,Proxima Ternion,,,,,,,,false,
 Pyraas,Pyraas,,,,,,,,false,
-Rana,Rana,,,,,,,,false,
-Rasalhague,Rasalhague,,,,,,,,false,
+Rana,Rana,17378,,,,5.0065,7.3702,-1.5331,true,Rana|17378
+Rasalhague,Rasalhague,86032,,,,-1.5871,-14.4532,3.2395,true,Rasalhague|86032
 Rivera,Rivera,,,,,,,,false,
 Rutherford,Rutherford,,,,,,,,false,
 Sagan,Sagan,,,,,,,,false,
@@ -99,24 +99,24 @@ Sakharov,Sakharov,,,,,,,,false,
 Schrodinger,Schrodinger,,,,,,,,false,
 Serpentis,Serpentis,,,,,,,,false,
 Shoza,Shoza,,,,,,,,false,
-Sirius,Sirius,,,,,,,,false,
-Sol,Sol,,,,,,,,false,Sol|
+Sirius,Sirius,32349,,,,-0.4943,2.4767,-0.7585,true,Sirius|32349
+Sol,Sol,,,,,0.0,0.0,0.0,true,Sol|
 Sparta,Sparta,,,,,,,,false,
 Strix,Strix,,,,,,,,false,
-Syrma,Syrma,,,,,,,,false,
+Syrma,Syrma,69701,,,,-18.3336,-12.3679,-2.3246,true,Syrma|69701
 Tau Ceti,Tau Ceti,,,,,,,,false,
-The Pup,The Pup,8102,,,,,,,false,52Tau Cet|8102
+The Pup,The Pup,8102,,,,3.1541,1.5395,-1.0023,true,52Tau Cet|8102
 Tidacha,Tidacha,,,,,,,,false,
-Toliman,Toliman,,,,,,,,false,
+Toliman,Toliman,71681,,,,-0.4952,-0.414,-1.1567,true,Toliman|71681
 Ursae Majoris,Ursae Majoris,,,,,,,,false,
 Ursae Minoris,Ursae Minoris,,,,,,,,false,
-Valo,Valo,,,,,,,,false,Gl 702B|
-Van Maanen's Star,Van Maanen's Star,,,,,,,,false,
-Vega,Vega,,,,,,,,false,
+Valo,Valo,,,,,0.122,-5.0792,0.2217,true,Gl 702B|
+Van Maanen's Star,Van Maanen's Star,3829,,,,4.147,0.9035,0.4003,true,Van Maanen's Star|3829
+Vega,Vega,91262,,,,0.9606,-5.908,4.8097,true,Vega|91262
 Verne,Verne,,,,,,,,false,
-Volii,Volii,64924,,,,,,,false,61    Vir|64924
+Volii,Volii,64924,,,,-7.6512,-2.7247,-2.6878,true,61    Vir|64924
 Wolf,Wolf,,,,,,,,false,
 Xi Ophiuchi,Xi Ophiuchi,,,,,,,,false,
 Zelazny,Zelazny,,,,,,,,false,
 Zeta Ophiuchi,Zeta Ophiuchi,,,,,,,,false,
-Zosma,Zosma,,,,,,,,false,
+Zosma,Zosma,54872,,,,-16.4422,3.3371,6.2807,true,Zosma|54872
